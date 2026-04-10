@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VISIOBEATS ♬</title>
 
-<!-- 🌅 FAVICON -->">
+<!-- ✅ FAVICON -->
 <link rel="icon" href="images.png">
+
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
 
 <style>
@@ -153,27 +154,29 @@ button {
 <script>
 const paypal = "https://paypal.me/zkaterswrldd/10";
 
-// ✅ FIXED FILE PATHS
+// ✅ ONLY FILES THAT EXIST
 const beats = [
     {title:"FALL APART", file:"beat1.mp3"},
     {title:"END OF THE WORLD", file:"beat2.mp3"},
-    {title:"COMING SOON...", file:"beat3.mp3"},
-    {title:"COMING SOON...", file:"beat4.mp3"}
+    {title:"COMING SOON...", file:"beat1.mp3"},
+    {title:"COMING SOON...", file:"beat2.mp3"}
 ];
 
 const cinematic = [
     {title:"MENTAL DEFLATION", file:"horror1.mp3"},
-    {title:"COMING SOON...", file:"horror2.mp3"},
-    {title:"COMING SOON...", file:"horror3.mp3"}
+    {title:"COMING SOON...", file:"horror1.mp3"},
+    {title:"COMING SOON...", file:"horror1.mp3"}
 ];
 
 const state = { beats: 0, cinematic: 0 };
 
-// STOP OTHER AUDIO
-function stopAllAudio() {
+// ✅ FIXED AUDIO SYSTEM
+function stopAllAudio(current) {
     document.querySelectorAll("audio").forEach(a => {
-        a.pause();
-        a.currentTime = 0;
+        if (a !== current) {
+            a.pause();
+            a.currentTime = 0;
+        }
     });
 }
 
@@ -196,8 +199,8 @@ function createCards(list, id, price) {
             </a>
         `;
 
-        // stop other audio when playing
-        card.querySelector("audio").addEventListener("play", stopAllAudio);
+        const audio = card.querySelector("audio");
+        audio.addEventListener("play", () => stopAllAudio(audio));
 
         container.appendChild(card);
     });
@@ -232,9 +235,9 @@ function move(id, dir) {
     update(id);
 }
 
-// LOAD
+// LOAD EVERYTHING ($10)
 createCards(beats, "beats", 10);
-createCards(cinematic, "cinematic", 12);
+createCards(cinematic, "cinematic", 10);
 </script>
 
 </body>
