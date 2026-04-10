@@ -5,8 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VISIOBEATS ♬</title>
 
+<!-- 🌅 FAVICON -->
+<link rel="icon" href="https://cdn-icons-png.flaticon.com/512/869/869869.png">
+
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
- 
+
 <style>
 body {
     margin: 0;
@@ -45,7 +48,7 @@ h1 {
     margin: 40px 0;
 }
 
-/* 🔥 3D CAROUSEL */
+/* CAROUSEL */
 .carousel {
     position: relative;
     height: 320px;
@@ -62,7 +65,6 @@ h1 {
     width: 260px;
     left: 50%;
     top: 50%;
-    transform-style: preserve-3d;
     transform: translate(-50%, -50%);
     background: rgba(0,0,0,0.7);
     padding: 15px;
@@ -81,32 +83,27 @@ h1 {
 .card.left {
     opacity: 0.6;
     transform: translate(-150%, -50%) scale(0.9) rotateY(20deg);
-    z-index: 2;
 }
 
 .card.right {
     opacity: 0.6;
     transform: translate(50%, -50%) scale(0.9) rotateY(-20deg);
-    z-index: 2;
 }
 
 .card.hidden {
     opacity: 0;
 }
 
-/* CINEMATIC COLOR */
 .cinematic .card.active {
     box-shadow: 0 0 30px #8a00ff;
 }
 
-/* AUDIO */
 audio {
     width: 100%;
     margin: 10px 0;
     filter: invert(1);
 }
 
-/* BUTTON */
 button {
     width: 100%;
     padding: 10px;
@@ -115,11 +112,6 @@ button {
     background: linear-gradient(90deg, #ff004c, #8a00ff);
     color: white;
     cursor: pointer;
-}
-
-/* NAV */
-.nav {
-    margin-top: 10px;
 }
 
 .nav button {
@@ -162,29 +154,33 @@ button {
 <script>
 const paypal = "https://paypal.me/zkaterswrldd/10";
 
-// 🎵 BEATS ($10)
+// ✅ FIXED FILE PATHS
 const beats = [
-    {title:"'FALL APART'", file:"beat1.mp3"},
-    {title:"'END OF THE WORLD'", file:"beat2.mp3"},
-    {title:"'COMING SOON...'", file:"audio/beat3.mp3"},
-    {title:"'COMING SOON...'", file:"audio/beat4.mp3"}
+    {title:"FALL APART", file:"beat1.mp3"},
+    {title:"END OF THE WORLD", file:"beat2.mp3"},
+    {title:"COMING SOON...", file:"beat1.mp3"},
+    {title:"COMING SOON...", file:"beat2.mp3"}
 ];
 
-// 🎬 CINEMATIC ($12)
 const cinematic = [
-    {title:"'MENTAL DEFLATION'", file:"audio/horror1.mp3"},
-    {title:"'COMING SOON...'", file:"audio/horror2.mp3"},
-    {title:"'COMING SOON...'", file:"audio/horror3.mp3"}
+    {title:"MENTAL DEFLATION", file:"horror1.mp3"},
+    {title:"COMING SOON...", file:"horror1.mp3"},
+    {title:"COMING SOON...", file:"horror1.mp3"}
 ];
 
-const state = {
-    beats: 0,
-    cinematic: 0
-};
+const state = { beats: 0, cinematic: 0 };
+
+// STOP OTHER AUDIO
+function stopAllAudio() {
+    document.querySelectorAll("audio").forEach(a => {
+        a.pause();
+        a.currentTime = 0;
+    });
+}
 
 // CREATE CARDS
-function createCards(list, containerId, price) {
-    const container = document.getElementById(containerId);
+function createCards(list, id, price) {
+    const container = document.getElementById(id);
 
     list.forEach(item => {
         const card = document.createElement("div");
@@ -201,16 +197,18 @@ function createCards(list, containerId, price) {
             </a>
         `;
 
+        // stop other audio when playing
+        card.querySelector("audio").addEventListener("play", stopAllAudio);
+
         container.appendChild(card);
     });
 
-    update(containerId);
+    update(id);
 }
 
-// UPDATE POSITIONS
+// UPDATE (WRAP FIX)
 function update(id) {
-    const container = document.getElementById(id);
-    const cards = container.children;
+    const cards = document.getElementById(id).children;
     const current = state[id];
 
     for (let i = 0; i < cards.length; i++) {
@@ -218,9 +216,9 @@ function update(id) {
 
         if (i === current) {
             cards[i].classList.add("active");
-        } else if (i === current - 1) {
+        } else if (i === (current - 1 + cards.length) % cards.length) {
             cards[i].classList.add("left");
-        } else if (i === current + 1) {
+        } else if (i === (current + 1) % cards.length) {
             cards[i].classList.add("right");
         } else {
             cards[i].classList.add("hidden");
@@ -230,14 +228,14 @@ function update(id) {
 
 // MOVE
 function move(id, dir) {
-    const listLength = document.getElementById(id).children.length;
-    state[id] = (state[id] + dir + listLength) % listLength;
+    const len = document.getElementById(id).children.length;
+    state[id] = (state[id] + dir + len) % len;
     update(id);
 }
 
 // LOAD
 createCards(beats, "beats", 10);
-createCards(cinematic, "cinematic", 8);
+createCards(cinematic, "cinematic", 12);
 </script>
 
 </body>
