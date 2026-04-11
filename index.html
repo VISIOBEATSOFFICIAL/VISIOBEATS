@@ -5,10 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VISIOBEATS ♬</title>
 
-<!-- ✅ FAVICON -->
 <link rel="icon" href="images.png">
-
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+
 <style>
 body {
     margin: 0;
@@ -18,53 +17,71 @@ body {
     overflow-x: hidden;
 }
 
-/* DARK GRAIN OVERLAY */
 body::before {
     content: "";
     position: fixed;
-    width: 100%;
-    height: 100%;
-    background: 
-        radial-gradient(circle at 30% 20%, rgba(138,0,255,0.15), transparent 40%),
-        radial-gradient(circle at 70% 80%, rgba(255,0,76,0.15), transparent 40%);
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(138,0,255,0.2), transparent 40%),
+                radial-gradient(circle, rgba(255,0,76,0.2), transparent 40%);
+    animation: moveBg 20s linear infinite;
     z-index: -2;
 }
 
-/* NOISE TEXTURE */
-body::after {
-    content: "";
+@keyframes moveBg {
+    0% { transform: translate(0,0); }
+    50% { transform: translate(-25%, -25%); }
+    100% { transform: translate(0,0); }
+}
+
+canvas {
     position: fixed;
-    width: 100%;
-    height: 100%;
-    background: url("https://grainy-gradients.vercel.app/noise.svg");
-    opacity: 0.15;
+    top: 0;
+    left: 0;
     z-index: -1;
 }
 
-/* HEADER */
+header {
+    text-align: center;
+    padding: 40px;
+}
+
 h1 {
     font-family: Orbitron;
     font-size: 3rem;
     text-shadow: 0 0 20px #ff004c, 0 0 40px #8a00ff;
 }
 
-/* CARD IMPROVEMENTS */
+.section {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.carousel {
+    position: relative;
+    height: 320px;
+    perspective: 1200px;
+}
+
+.carousel-track {
+    position: relative;
+    height: 100%;
+}
+
 .card {
     position: absolute;
     width: 260px;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(10,10,20,0.8);
-    backdrop-filter: blur(10px);
+    transform: translate(-50%, -50%) scale(0.8);
+    background: rgba(10,10,20,0.85);
+    backdrop-filter: blur(12px);
     padding: 15px;
     border-radius: 15px;
-    transition: 0.5s;
+    transition: 0.5s ease;
     opacity: 0;
-    border: 1px solid rgba(255,255,255,0.05);
 }
 
-/* GLOW ACTIVE */
 .card.active {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1.1);
@@ -72,7 +89,30 @@ h1 {
     box-shadow: 0 0 25px #ff004c, 0 0 60px #8a00ff;
 }
 
-/* BUTTON UPGRADE */
+.card.playing {
+    box-shadow: 0 0 40px #00ffe1;
+}
+
+.card.left {
+    opacity: 0.5;
+    transform: translate(-160%, -50%) scale(0.85) rotateY(20deg);
+}
+
+.card.right {
+    opacity: 0.5;
+    transform: translate(60%, -50%) scale(0.85) rotateY(-20deg);
+}
+
+.card.hidden {
+    opacity: 0;
+}
+
+audio {
+    width: 100%;
+    margin: 10px 0;
+    filter: invert(1);
+}
+
 button {
     width: 100%;
     padding: 10px;
@@ -81,146 +121,187 @@ button {
     background: linear-gradient(90deg, #ff004c, #8a00ff);
     color: white;
     cursor: pointer;
-    transition: 0.3s;
 }
 
-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 15px #ff004c;
+.nav button {
+    width: auto;
+    padding: 10px 20px;
+    margin: 5px;
 }
 
-/* 🔥 NEW BADGE */
 .new-badge {
     position: absolute;
     top: 10px;
     left: 10px;
     background: #ff004c;
-    color: white;
     font-size: 0.7rem;
     padding: 4px 8px;
     border-radius: 5px;
-    box-shadow: 0 0 10px #ff004c;
 }
-    </style>
+</style>
 </head>
-    
 
 <body>
 
+<canvas id="particles"></canvas>
+
 <header>
-    <h1>VISIOBEATS ♬</h1>
-    <div>Enter The Void</div>
+<h1>VISIOBEATS ♬</h1>
+<div>Enter The Void</div>
 </header>
 
 <div class="section">
-    <h2>NEW BEATS 🎵</h2>
-    <div class="carousel">
-        <div class="carousel-track" id="beats"></div>
-    </div>
-    <div class="nav">
-        <button onclick="move('beats', -1)">◀</button>
-        <button onclick="move('beats', 1)">▶</button>
-    </div>
+<h2>NEW BEATS 🎵</h2>
+<div class="carousel">
+<div class="carousel-track" id="beats"></div>
+</div>
+<div class="nav">
+<button onclick="move('beats', -1)">◀</button>
+<button onclick="move('beats', 1)">▶</button>
+</div>
 </div>
 
-<div class="section cinematic">
-    <h2>CINEMATIC 🎬</h2>
-    <div class="carousel">
-        <div class="carousel-track" id="cinematic"></div>
-    </div>
-    <div class="nav">
-        <button onclick="move('cinematic', -1)">◀</button>
-        <button onclick="move('cinematic', 1)">▶</button>
-    </div>
+<div class="section">
+<h2>CINEMATIC 🎬</h2>
+<div class="carousel">
+<div class="carousel-track" id="cinematic"></div>
+</div>
+<div class="nav">
+<button onclick="move('cinematic', -1)">◀</button>
+<button onclick="move('cinematic', 1)">▶</button>
+</div>
 </div>
 
 <script>
 const paypal = "https://paypal.me/zkaterswrldd/10";
 
-// ✅ ONLY FILES THAT EXIST
 const beats = [
-    {title:"FALL APART", file:"beat1.mp3"},
-    {title:"END OF THE WORLD", file:"beat2.mp3"},
-    {title:"COMING SOON...", file:"beat3.mp3"},
-    {title:"COMING SOON...", file:"beat4.mp3"}
+{title:"FALL APART", file:"beat1.mp3"},
+{title:"END OF THE WORLD", file:"beat2.mp3"},
+{title:"COMING SOON...", file:"beat3.mp3"},
+{title:"COMING SOON...", file:"beat4.mp3"}
 ];
 
 const cinematic = [
-    {title:"MENTAL DEFLATION", file:"horror1.mp3"},
-    {title:"COMING SOON...", file:"horror2.mp3"},
-    {title:"COMING SOON...", file:"horror3.mp3"}
+{title:"MENTAL DEFLATION", file:"horror1.mp3"},
+{title:"COMING SOON...", file:"horror2.mp3"},
+{title:"COMING SOON...", file:"horror3.mp3"}
 ];
 
 const state = { beats: 0, cinematic: 0 };
 
-// ✅ FIXED AUDIO SYSTEM
 function stopAllAudio(current) {
-    document.querySelectorAll("audio").forEach(a => {
-        if (a !== current) {
-            a.pause();
-            a.currentTime = 0;
-        }
-    });
+document.querySelectorAll("audio").forEach(a => {
+if (a !== current) {
+a.pause();
+a.currentTime = 0;
+a.parentElement.classList.remove("playing");
+}
+});
 }
 
-// CREATE CARDS
-function createCards(list, id, price) {
-    const container = document.getElementById(id);
+function createCards(list, id) {
+const container = document.getElementById(id);
 
-    list.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "card";
+list.forEach((item, index) => {
+const card = document.createElement("div");
+card.className = "card";
 
-        card.innerHTML = `
-            <h3>${item.title}</h3>
-            <audio controls>
-                <source src="${item.file}" type="audio/mpeg">
-            </audio>
-            <p>$${price}</p>
-            <a href="${paypal}" target="_blank">
-                <button>BUY ⚡</button>
-            </a>
-        `;
+card.innerHTML = `
+${id === "beats" && index < 2 ? '<div class="new-badge">NEW</div>' : ''}
+<h3>${item.title}</h3>
+<audio preload="auto">
+<source src="${item.file}" type="audio/mpeg">
+</audio>
+<p>$10</p>
+<button onclick="buy()">BUY ⚡</button>
+`;
 
-        const audio = card.querySelector("audio");
-        audio.addEventListener("play", () => stopAllAudio(audio));
+const audio = card.querySelector("audio");
 
-        container.appendChild(card);
-    });
+card.addEventListener("mouseenter", () => {
+stopAllAudio(audio);
+audio.play();
+card.classList.add("playing");
+});
 
-    update(id);
+card.addEventListener("mouseleave", () => {
+audio.pause();
+audio.currentTime = 0;
+card.classList.remove("playing");
+});
+
+container.appendChild(card);
+});
+
+update(id);
 }
 
-// UPDATE (WRAP FIX)
+function buy() {
+window.open(paypal, "_blank");
+}
+
 function update(id) {
-    const cards = document.getElementById(id).children;
-    const current = state[id];
+const cards = document.getElementById(id).children;
+const current = state[id];
 
-    for (let i = 0; i < cards.length; i++) {
-        cards[i].className = "card";
+for (let i = 0; i < cards.length; i++) {
+cards[i].className = "card";
 
-        if (i === current) {
-            cards[i].classList.add("active");
-        } else if (i === (current - 1 + cards.length) % cards.length) {
-            cards[i].classList.add("left");
-        } else if (i === (current + 1) % cards.length) {
-            cards[i].classList.add("right");
-        } else {
-            cards[i].classList.add("hidden");
-        }
-    }
+if (i === current) cards[i].classList.add("active");
+else if (i === (current - 1 + cards.length) % cards.length) cards[i].classList.add("left");
+else if (i === (current + 1) % cards.length) cards[i].classList.add("right");
+else cards[i].classList.add("hidden");
+}
 }
 
-// MOVE
 function move(id, dir) {
-    const len = document.getElementById(id).children.length;
-    state[id] = (state[id] + dir + len) % len;
-    update(id);
+const len = document.getElementById(id).children.length;
+state[id] = (state[id] + dir + len) % len;
+update(id);
 }
 
-// LOAD EVERYTHING ($10)
-createCards(beats, "beats", 10);
-createCards(cinematic, "cinematic", 10);
+createCards(beats, "beats");
+createCards(cinematic, "cinematic");
+
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+for (let i = 0; i < 60; i++) {
+particles.push({
+x: Math.random()*canvas.width,
+y: Math.random()*canvas.height,
+r: Math.random()*2,
+dx: (Math.random()-0.5),
+dy: (Math.random()-0.5)
+});
+}
+
+function animate() {
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+particles.forEach(p => {
+p.x += p.dx;
+p.y += p.dy;
+
+if(p.x<0||p.x>canvas.width) p.dx *= -1;
+if(p.y<0||p.y>canvas.height) p.dy *= -1;
+
+ctx.beginPath();
+ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+ctx.fillStyle = "rgba(255,255,255,0.3)";
+ctx.fill();
+});
+
+requestAnimationFrame(animate);
+}
+
+animate();
 </script>
 
 </body>
