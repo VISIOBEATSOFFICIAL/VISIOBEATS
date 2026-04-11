@@ -13,6 +13,15 @@ body {
     background: #0a0a12;
     color: white;
     font-family: Poppins, sans-serif;
+    overflow-x: hidden;
+}
+
+/* PARTICLE BACKGROUND */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
 }
 
 /* HEADER */
@@ -23,7 +32,7 @@ header {
 
 h1 {
     font-family: Orbitron;
-    font-size: 2.5rem;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
     text-shadow: 0 0 20px #ff004c;
 }
 
@@ -31,15 +40,33 @@ h1 {
     opacity: 0.6;
 }
 
+/* YOUTUBE LINK */
+.youtube {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    opacity: 0.8;
+}
+.youtube:hover {
+    opacity: 1;
+}
+.youtube img {
+    width: 20px;
+}
+
 /* SECTION */
 .section {
     max-width: 1100px;
-    margin: 50px auto;
-    padding: 0 20px;
+    margin: 40px auto;
+    padding: 0 15px;
 }
 
 .section h2 {
     margin-bottom: 20px;
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
 }
 
 /* SLIDER */
@@ -50,16 +77,10 @@ h1 {
     padding-bottom: 10px;
 }
 
-.slider::-webkit-scrollbar {
-    height: 6px;
-}
-.slider::-webkit-scrollbar-thumb {
-    background: #ff004c;
-}
-
 /* CARD */
 .card {
-    min-width: 260px;
+    min-width: 240px;
+    flex: 0 0 auto;
     background: #111122;
     border-radius: 15px;
     padding: 15px;
@@ -68,8 +89,8 @@ h1 {
 }
 
 .card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 0 20px #ff004c;
+    transform: translateY(-6px);
+    box-shadow: 0 0 15px #ff004c;
 }
 
 /* NEW BADGE */
@@ -104,29 +125,93 @@ button {
 button:hover {
     opacity: 0.85;
 }
+
+/* MOBILE */
+@media (max-width: 600px) {
+    .card {
+        min-width: 200px;
+    }
+}
 </style>
 </head>
 
 <body>
 
+<canvas id="bg"></canvas>
+
 <header>
     <h1>VISIOBEATS ♬</h1>
     <div class="subtitle">Enter The Void</div>
+
+    <div class="youtube" onclick="window.open('https://youtube.com/@yourname','_blank')">
+        <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png">
+        <span>@yourname</span>
+    </div>
 </header>
 
-<!-- BEATS -->
 <div class="section">
     <h2>NEW BEATS 🎵</h2>
     <div class="slider" id="beats"></div>
 </div>
 
-<!-- CINEMATIC -->
 <div class="section">
     <h2>CINEMATIC 🎬</h2>
     <div class="slider" id="cinematic"></div>
 </div>
 
 <script>
+// PARTICLES
+const canvas = document.getElementById("bg");
+const ctx = canvas.getContext("2d");
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener("resize", resize);
+
+let particles = [];
+for (let i = 0; i < 80; i++) {
+    particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 2,
+        dx: (Math.random() - 0.5) * 0.5,
+        dy: (Math.random() - 0.5) * 0.5
+    });
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#ff004c";
+
+    particles.forEach(p => {
+        p.x += p.dx;
+        p.y += p.dy;
+
+        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    requestAnimationFrame(animate);
+}
+animate();
+
+// AUDIO CONTROL (ONLY ONE PLAYS)
+let currentAudio = null;
+
+document.addEventListener("play", function(e) {
+    if (currentAudio && currentAudio !== e.target) {
+        currentAudio.pause();
+    }
+    currentAudio = e.target;
+}, true);
+
 const paypal = "https://paypal.me/zkaterswrldd/10";
 
 const beats = [
@@ -172,4 +257,4 @@ createCards(cinematic, "cinematic");
 </script>
 
 </body>
-</html>
+</html> 
