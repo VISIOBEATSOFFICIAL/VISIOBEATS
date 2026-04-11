@@ -10,19 +10,9 @@
 <style>
 body {
     margin: 0;
-    background: radial-gradient(circle at top, #14001f, #000000 70%);
+    background: #0a0a12;
     color: white;
     font-family: Poppins, sans-serif;
-    overflow-x: hidden;
-}
-
-/* PARTICLES CANVAS */
-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    pointer-events: none;
 }
 
 /* HEADER */
@@ -34,7 +24,7 @@ header {
 h1 {
     font-family: Orbitron;
     font-size: 2.5rem;
-    text-shadow: 0 0 20px #ff004c, 0 0 40px #8a00ff;
+    text-shadow: 0 0 20px #ff004c;
 }
 
 .subtitle {
@@ -45,7 +35,7 @@ h1 {
 .section {
     max-width: 1100px;
     margin: 50px auto;
-    padding: 0 10px;
+    padding: 0 20px;
 }
 
 .section h2 {
@@ -57,8 +47,7 @@ h1 {
     display: flex;
     gap: 20px;
     overflow-x: auto;
-    padding: 20px;
-    scroll-behavior: smooth;
+    padding-bottom: 10px;
 }
 
 .slider::-webkit-scrollbar {
@@ -71,7 +60,7 @@ h1 {
 /* CARD */
 .card {
     min-width: 260px;
-    background: rgba(15,15,30,0.9);
+    background: #111122;
     border-radius: 15px;
     padding: 15px;
     transition: 0.3s;
@@ -104,37 +93,34 @@ audio {
 /* BUTTON */
 button {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     border: none;
     border-radius: 8px;
     background: linear-gradient(90deg, #ff004c, #8a00ff);
     color: white;
-    font-weight: bold;
     cursor: pointer;
-    transition: 0.3s;
 }
 
 button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 15px #ff004c;
+    opacity: 0.85;
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="particles"></canvas>
-
 <header>
     <h1>VISIOBEATS ♬</h1>
     <div class="subtitle">Enter The Void</div>
 </header>
 
+<!-- BEATS -->
 <div class="section">
     <h2>NEW BEATS 🎵</h2>
     <div class="slider" id="beats"></div>
 </div>
 
+<!-- CINEMATIC -->
 <div class="section">
     <h2>CINEMATIC 🎬</h2>
     <div class="slider" id="cinematic"></div>
@@ -166,23 +152,12 @@ card.className = "card";
 card.innerHTML = `
 ${id === "beats" && index < 2 ? '<div class="new">NEW</div>' : ''}
 <h3>${item.title}</h3>
-<audio preload="auto">
+<audio controls>
 <source src="${item.file}" type="audio/mpeg">
 </audio>
-<p>$10 • Instant Download</p>
+<p>$10</p>
 <button onclick="buy()">BUY ⚡</button>
 `;
-
-const audio = card.querySelector("audio");
-
-card.addEventListener("mouseenter", () => {
-audio.currentTime = 0;
-audio.play();
-});
-
-card.addEventListener("mouseleave", () => {
-audio.pause();
-});
 
 container.appendChild(card);
 });
@@ -194,50 +169,6 @@ window.open(paypal, "_blank");
 
 createCards(beats, "beats");
 createCards(cinematic, "cinematic");
-
-/* PARTICLES SYSTEM */
-const canvas = document.getElementById("particles");
-const ctx = canvas.getContext("2d");
-
-function resize() {
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-}
-resize();
-window.addEventListener("resize", resize);
-
-let particles = [];
-
-for (let i = 0; i < 80; i++) {
-particles.push({
-x: Math.random()*canvas.width,
-y: Math.random()*canvas.height,
-r: Math.random()*2,
-dx: (Math.random()-0.5)*0.5,
-dy: (Math.random()-0.5)*0.5
-});
-}
-
-function animate() {
-ctx.clearRect(0,0,canvas.width,canvas.height);
-
-particles.forEach(p => {
-p.x += p.dx;
-p.y += p.dy;
-
-if(p.x<0||p.x>canvas.width) p.dx *= -1;
-if(p.y<0||p.y>canvas.height) p.dy *= -1;
-
-ctx.beginPath();
-ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-ctx.fillStyle = "rgba(255,255,255,0.3)";
-ctx.fill();
-});
-
-requestAnimationFrame(animate);
-}
-
-animate();
 </script>
 
 </body>
