@@ -103,6 +103,31 @@ button:hover {
     transform: scale(1.05);
 }
 
+/* Purchase popup */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    display: none;
+}
+
+.popup-content {
+    background: #111;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.popup button {
+    margin-top: 15px;
+}
 </style>
 </head>
 
@@ -123,7 +148,18 @@ button:hover {
 <div class="slider" id="cinematic"></div>
 </div>
 
+<!-- Purchase Popup -->
+<div class="popup" id="popup">
+  <div class="popup-content">
+    <h3>Complete Purchase</h3>
+    <p>$10 per beat</p>
+    <button onclick="completePurchase()">PAY NOW ⚡</button>
+  </div>
+</div>
+
 <script>
+let selectedFile = null;
+
 const beats = [
 {title:"FALL APART", file:"beat1.mp3"},
 {title:"END OF TIME", file:"beat2.mp3"},
@@ -152,10 +188,10 @@ function createCards(list, id) {
             <source src="${item.file}" type="audio/mpeg">
         </audio>
         <div class="price">$10</div>
-        <button>PURCHASE ⚡</button>
+        <button onclick="buyBeat('${item.file}')">PURCHASE ⚡</button>
         `;
 
-        // 3D hover effect
+        // 3D hover
         card.addEventListener("mousemove", e => {
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -173,6 +209,25 @@ function createCards(list, id) {
 
         container.appendChild(card);
     });
+}
+
+function buyBeat(file) {
+    selectedFile = file;
+    document.getElementById("popup").style.display = "flex";
+}
+
+function completePurchase() {
+    document.getElementById("popup").style.display = "none";
+
+    // Force download AFTER "payment"
+    const link = document.createElement("a");
+    link.href = selectedFile;
+    link.download = selectedFile;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    alert("Purchase successful ⚡ Download started");
 }
 
 createCards(beats, "beats");
