@@ -23,13 +23,11 @@ header {
 h1 {
     font-family: Orbitron;
     font-size: clamp(2.5rem, 6vw, 4rem);
-    color: white;
     text-shadow: 0 0 25px #ff2aa0;
 }
 
 .subtitle {
     opacity: 0.7;
-    margin-top: 10px;
 }
 
 .section {
@@ -48,7 +46,6 @@ h1 {
 
 .card {
     width: 260px;
-    height: 200px;
     background: #0a0a14;
     border-radius: 20px;
     padding: 20px;
@@ -76,13 +73,14 @@ h1 {
     font-size: 0.7rem;
 }
 
-h3 {
-    margin-top: 20px;
-}
+h3 { margin-top: 15px; }
 
-.price {
+.price { margin: 10px 0; opacity: 0.8; }
+
+audio {
+    width: 100%;
     margin: 10px 0;
-    opacity: 0.8;
+    filter: invert(1);
 }
 
 button {
@@ -118,7 +116,6 @@ button {
 
 <script>
 const paypal = "https://paypal.me/zkaterswrldd/10";
-
 let unlocked = JSON.parse(localStorage.getItem("purchased")) || [];
 
 const beats = [
@@ -130,6 +127,7 @@ const beats = [
 function purchase(file) {
     window.open(paypal, "_blank");
 
+    // simulate unlock after payment
     setTimeout(() => {
         unlocked.push(file);
         localStorage.setItem("purchased", JSON.stringify(unlocked));
@@ -149,9 +147,18 @@ function createCards() {
         card.innerHTML = `
         ${i === 0 ? '<div class="new">NEW</div>' : ''}
         <h3>${item.title}</h3>
+
+        <!-- AUDIO PREVIEW (ALWAYS AVAILABLE) -->
+        <audio controls controlsList="nodownload">
+            <source src="${item.file}" type="audio/mpeg">
+        </audio>
+
         <div class="price">$10</div>
+
         ${isUnlocked 
-            ? `<a href="${item.file}" download><button class="download-btn">DOWNLOAD MP3 ⚡</button></a>`
+            ? `<a href="${item.file}" download>
+                <button class="download-btn">DOWNLOAD MP3 ⚡</button>
+               </a>`
             : `<button onclick="purchase('${item.file}')">BUY ⚡</button>`
         }
         `;
