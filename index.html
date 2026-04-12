@@ -10,9 +10,17 @@
 <style>
 body {
     margin: 0;
-    background: radial-gradient(circle at center, #0a0a12, #05050a);
+    background: radial-gradient(circle at top, #1a0022, #000);
     color: white;
     font-family: Poppins, sans-serif;
+    overflow-x: hidden;
+}
+
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
 }
 
 header {
@@ -23,58 +31,45 @@ header {
 h1 {
     font-family: Orbitron;
     font-size: clamp(2rem, 5vw, 3.5rem);
-    text-shadow: 0 0 25px #ff004c;
+    text-shadow: 0 0 30px #ff2aa0;
 }
 
 .subtitle {
-    opacity: 0.6;
-    margin-bottom: 15px;
+    opacity: 0.7;
 }
 
 .section {
-    max-width: 1200px;
+    max-width: 1100px;
     margin: 50px auto;
-    padding: 0 20px;
-}
-
-.section h2 {
-    margin-bottom: 25px;
+    padding: 0 15px;
 }
 
 .slider {
     display: flex;
-    gap: 25px;
+    gap: 20px;
     overflow-x: auto;
-    padding-bottom: 10px;
 }
 
 .card {
-    min-width: 260px;
-    height: 300px;
-    background: linear-gradient(145deg, #111122, #0a0a18);
-    border-radius: 20px;
-    padding: 20px;
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    min-width: 240px;
+    background: rgba(15,15,30,0.8);
+    border-radius: 15px;
+    padding: 15px;
+    transition: 0.3s;
+    backdrop-filter: blur(10px);
 }
 
 .card:hover {
-    box-shadow: 0 20px 40px rgba(255,0,76,0.3);
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 0 25px #ff2aa0;
 }
 
 .new {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    background: #ff004c;
-    padding: 5px 10px;
+    background: #ff2aa0;
+    padding: 4px 8px;
     font-size: 0.7rem;
-    border-radius: 6px;
-}
-
-.card h3 {
-    font-size: 1.1rem;
+    border-radius: 5px;
+    display: inline-block;
 }
 
 audio {
@@ -83,55 +78,28 @@ audio {
     filter: invert(1);
 }
 
-.price {
-    margin: 5px 0;
-    font-weight: 600;
-}
-
 button {
     width: 100%;
     padding: 12px;
     border: none;
-    border-radius: 12px;
-    background: linear-gradient(90deg, #ff004c, #ff66cc);
+    border-radius: 10px;
+    background: linear-gradient(90deg, #ff2aa0, #ff6ec7);
     color: white;
+    font-weight: 600;
     cursor: pointer;
-    transition: 0.3s;
 }
 
-button:hover {
-    transform: scale(1.05);
+.download-btn {
+    background: linear-gradient(90deg, #ff2aa0, #ffffff);
+    color: black;
 }
 
-/* Purchase popup */
-.popup {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
-    display: none;
-}
-
-.popup-content {
-    background: #111;
-    padding: 30px;
-    border-radius: 15px;
-    text-align: center;
-}
-
-.popup button {
-    margin-top: 15px;
-}
 </style>
 </head>
 
 <body>
+
+<canvas id="bg"></canvas>
 
 <header>
 <h1>VISIOBEATS ♬</h1>
@@ -148,86 +116,111 @@ button:hover {
 <div class="slider" id="cinematic"></div>
 </div>
 
-<!-- Purchase Popup -->
-<div class="popup" id="popup">
-  <div class="popup-content">
-    <h3>Complete Purchase</h3>
-    <p>$10 per beat</p>
-    <button onclick="completePurchase()">PAY NOW ⚡</button>
-  </div>
-</div>
-
 <script>
-let selectedFile = null;
+// PARTICLE SPACE BACKGROUND
+const canvas = document.getElementById("bg");
+const ctx = canvas.getContext("2d");
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener("resize", resize);
+
+let stars = [];
+for (let i = 0; i < 120; i++) {
+    stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.5,
+        d: Math.random() * 0.3
+    });
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "white";
+
+    stars.forEach(s => {
+        s.y += s.d;
+        if (s.y > canvas.height) s.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    requestAnimationFrame(animate);
+}
+animate();
+
+// AUDIO CONTROL (ONLY ONE AT A TIME)
+let currentAudio = null;
+document.addEventListener("play", function(e) {
+    if (currentAudio && currentAudio !== e.target) {
+        currentAudio.pause();
+    }
+    currentAudio = e.target;
+}, true);
+
+const paypal = "https://paypal.me/zkaterswrldd/10";
+let unlocked = JSON.parse(localStorage.getItem("purchased")) || [];
 
 const beats = [
 {title:"FALL APART", file:"beat1.mp3"},
-{title:"END OF TIME", file:"beat2.mp3"},
+{title:"END OF THE TIME", file:"beat2.mp3"},
 {title:"LAST TIME", file:"beat3.mp3"},
-{title:"LOGISTICS", file:"beat4.mp3"},
+{title:"Logistics", file:"beat4.mp3"},
 {title:"TWO FACED", file:"beat5.mp3"},
 ];
 
 const cinematic = [
 {title:"MENTAL DEFLATION", file:"horror1.mp3"},
-{title:"COMING SOON", file:"horror2.mp3"},
-{title:"COMING SOON", file:"horror3.mp3"}
+{title:"COMING SOON...", file:"horror2.mp3"},
+{title:"COMING SOON...", file:"horror3.mp3"}
 ];
+
+function purchase(file) {
+    window.open(paypal, "_blank");
+
+    setTimeout(() => {
+        unlocked.push(file);
+        localStorage.setItem("purchased", JSON.stringify(unlocked));
+        location.reload();
+    }, 2000);
+}
 
 function createCards(list, id) {
     const container = document.getElementById(id);
 
     list.forEach((item, index) => {
+        const isUnlocked = unlocked.includes(item.file);
+
         const card = document.createElement("div");
         card.className = "card";
 
         card.innerHTML = `
         ${id === "beats" && index < 2 ? '<div class="new">NEW</div>' : ''}
         <h3>${item.title}</h3>
-        <audio controls>
+
+        <!-- LISTEN PREVIEW ALWAYS AVAILABLE -->
+        <audio controls controlsList="nodownload">
             <source src="${item.file}" type="audio/mpeg">
         </audio>
-        <div class="price">$10</div>
-        <button onclick="buyBeat('${item.file}')">PURCHASE ⚡</button>
+
+        <p>$10</p>
+
+        ${isUnlocked
+            ? `<a href="${item.file}" download>
+                <button class="download-btn">DOWNLOAD MP3 ⚡</button>
+               </a>`
+            : `<button onclick="purchase('${item.file}')">PURCHASE THIS BEAT ⚡</button>`
+        }
         `;
-
-        // 3D hover
-        card.addEventListener("mousemove", e => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            const rotateX = -(y - rect.height/2) / 10;
-            const rotateY = (x - rect.width/2) / 10;
-
-            card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-        });
-
-        card.addEventListener("mouseleave", () => {
-            card.style.transform = "rotateX(0) rotateY(0)";
-        });
 
         container.appendChild(card);
     });
-}
-
-function buyBeat(file) {
-    selectedFile = file;
-    document.getElementById("popup").style.display = "flex";
-}
-
-function completePurchase() {
-    document.getElementById("popup").style.display = "none";
-
-    // Force download AFTER "payment"
-    const link = document.createElement("a");
-    link.href = selectedFile;
-    link.download = selectedFile;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    alert("Purchase successful ⚡ Download started");
 }
 
 createCards(beats, "beats");
