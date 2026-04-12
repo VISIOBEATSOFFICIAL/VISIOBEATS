@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -16,6 +16,7 @@ body {
     overflow-x: hidden;
 }
 
+/* BACKGROUND */
 canvas {
     position: fixed;
     top: 0;
@@ -34,42 +35,46 @@ h1 {
     text-shadow: 0 0 30px #ff2aa0;
 }
 
-.subtitle {
-    opacity: 0.7;
-}
-
 .section {
     max-width: 1100px;
     margin: 50px auto;
     padding: 0 15px;
 }
 
-.slider {
+/* 3D CAROUSEL */
+.carousel {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px;
     gap: 20px;
-    overflow-x: auto;
+    overflow: hidden;
 }
 
 .card {
-    min-width: 240px;
+    width: 260px;
     background: rgba(15,15,30,0.8);
     border-radius: 15px;
     padding: 15px;
-    transition: 0.3s;
     backdrop-filter: blur(10px);
+    transition: 0.5s;
+    transform-style: preserve-3d;
+    cursor: pointer;
+    opacity: 0.6;
 }
 
-.card:hover {
-    transform: translateY(-8px) scale(1.03);
-    box-shadow: 0 0 25px #ff2aa0;
+.card.active {
+    transform: scale(1.2) translateZ(50px);
+    opacity: 1;
+    box-shadow: 0 0 30px #ff2aa0;
 }
 
-.new {
-    background: #ff2aa0;
-    padding: 4px 8px;
-    font-size: 0.7rem;
-    border-radius: 5px;
-    display: inline-block;
+.card.left {
+    transform: rotateY(25deg) scale(0.9);
+}
+
+.card.right {
+    transform: rotateY(-25deg) scale(0.9);
 }
 
 audio {
@@ -94,6 +99,10 @@ button {
     color: black;
 }
 
+.confirm-btn {
+    background: #00ffcc;
+    color: black;
+}
 </style>
 </head>
 
@@ -103,21 +112,16 @@ button {
 
 <header>
 <h1>VISIOBEATS ♬</h1>
-<div class="subtitle">Enter The Void</div>
+<p>Enter The Void</p>
 </header>
 
 <div class="section">
 <h2>NEW BEATS 🎵</h2>
-<div class="slider" id="beats"></div>
-</div>
-
-<div class="section">
-<h2>CINEMATIC 🎬</h2>
-<div class="slider" id="cinematic"></div>
+<div class="carousel" id="beats"></div>
 </div>
 
 <script>
-// PARTICLE SPACE BACKGROUND
+// PARTICLES
 const canvas = document.getElementById("bg");
 const ctx = canvas.getContext("2d");
 
@@ -128,26 +132,22 @@ function resize() {
 resize();
 window.addEventListener("resize", resize);
 
-let stars = [];
-for (let i = 0; i < 120; i++) {
-    stars.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        r: Math.random() * 1.5,
-        d: Math.random() * 0.3
-    });
-}
+let stars = Array.from({length:120}, () => ({
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    r: Math.random()*1.5,
+    d: Math.random()*0.3
+}));
 
 function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "white";
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle="white";
 
-    stars.forEach(s => {
-        s.y += s.d;
-        if (s.y > canvas.height) s.y = 0;
-
+    stars.forEach(s=>{
+        s.y+=s.d;
+        if(s.y>canvas.height)s.y=0;
         ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
         ctx.fill();
     });
 
@@ -155,76 +155,86 @@ function animate() {
 }
 animate();
 
-// AUDIO CONTROL (ONLY ONE AT A TIME)
-let currentAudio = null;
-document.addEventListener("play", function(e) {
-    if (currentAudio && currentAudio !== e.target) {
-        currentAudio.pause();
-    }
-    currentAudio = e.target;
-}, true);
+// AUDIO SINGLE PLAY
+let currentAudio=null;
+document.addEventListener("play",e=>{
+    if(currentAudio && currentAudio!==e.target) currentAudio.pause();
+    currentAudio=e.target;
+},true);
 
-const paypal = "https://paypal.me/zkaterswrldd/10";
+const paypal="https://paypal.me/zkaterswrldd/10";
 let unlocked = JSON.parse(localStorage.getItem("purchased")) || [];
 
-const beats = [
-{title:"FALL APART", file:"beat1.mp3"},
-{title:"END OF THE TIME", file:"beat2.mp3"},
-{title:"LAST TIME", file:"beat3.mp3"},
-{title:"Logistics", file:"beat4.mp3"},
-{title:"TWO FACED", file:"beat5.mp3"},
+const beats=[
+{title:"FALL APART",file:"beat1.mp3"},
+{title:"END OF THE TIME",file:"beat2.mp3"},
+{title:"LAST TIME",file:"beat3.mp3"},
+{title:"Logistics",file:"beat4.mp3"},
+{title:"TWO FACED",file:"beat5.mp3"},
 ];
 
-const cinematic = [
-{title:"MENTAL DEFLATION", file:"horror1.mp3"},
-{title:"COMING SOON...", file:"horror2.mp3"},
-{title:"COMING SOON...", file:"horror3.mp3"}
-];
+function purchase(file){
+    window.open(paypal,"_blank");
 
-function purchase(file) {
-    window.open(paypal, "_blank");
+    alert("After completing payment, click CONFIRM PAYMENT to unlock.");
+}
 
-    setTimeout(() => {
+function confirmPurchase(file){
+    if(!unlocked.includes(file)){
         unlocked.push(file);
-        localStorage.setItem("purchased", JSON.stringify(unlocked));
+        localStorage.setItem("purchased",JSON.stringify(unlocked));
         location.reload();
-    }, 2000);
+    }
 }
 
-function createCards(list, id) {
-    const container = document.getElementById(id);
+// CREATE CAROUSEL
+function createCarousel(list,id){
+    const container=document.getElementById(id);
+    let current=0;
 
-    list.forEach((item, index) => {
-        const isUnlocked = unlocked.includes(item.file);
+    function render(){
+        container.innerHTML="";
 
-        const card = document.createElement("div");
-        card.className = "card";
+        list.forEach((item,i)=>{
+            const isUnlocked=unlocked.includes(item.file);
 
-        card.innerHTML = `
-        ${id === "beats" && index < 2 ? '<div class="new">NEW</div>' : ''}
-        <h3>${item.title}</h3>
+            const card=document.createElement("div");
+            card.className="card";
 
-        <!-- LISTEN PREVIEW ALWAYS AVAILABLE -->
-        <audio controls controlsList="nodownload">
-            <source src="${item.file}" type="audio/mpeg">
-        </audio>
+            if(i===current) card.classList.add("active");
+            else if(i===current-1) card.classList.add("left");
+            else if(i===current+1) card.classList.add("right");
 
-        <p>$10</p>
+            card.innerHTML=`
+            <h3>${item.title}</h3>
 
-        ${isUnlocked
+            <audio controls controlsList="nodownload">
+                <source src="${item.file}" type="audio/mpeg">
+            </audio>
+
+            <p>$10</p>
+
+            ${
+            isUnlocked
             ? `<a href="${item.file}" download>
-                <button class="download-btn">DOWNLOAD MP3 ⚡</button>
+                <button class="download-btn">DOWNLOAD ⚡</button>
                </a>`
-            : `<button onclick="purchase('${item.file}')">PURCHASE THIS BEAT ⚡</button>`
-        }
-        `;
+            : `
+                <button onclick="purchase('${item.file}')">PURCHASE ⚡</button>
+                <button class="confirm-btn" onclick="confirmPurchase('${item.file}')">I PAID ✅</button>
+              `
+            }
+            `;
 
-        container.appendChild(card);
-    });
+            card.onclick=()=>{current=i;render();};
+            container.appendChild(card);
+        });
+    }
+
+    render();
 }
 
-createCards(beats, "beats");
-createCards(cinematic, "cinematic");
+createCarousel(beats,"beats");
 </script>
 
 </body>
