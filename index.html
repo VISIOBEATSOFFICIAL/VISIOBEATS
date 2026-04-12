@@ -10,97 +10,95 @@
 <style>
 body {
     margin: 0;
-    background: radial-gradient(circle at center, #0a0a12, #05050a);
+    background: radial-gradient(circle at center, #1a0022, #000);
     color: white;
     font-family: Poppins, sans-serif;
 }
 
 header {
     text-align: center;
-    padding: 50px 20px 20px;
+    padding: 60px 20px 20px;
 }
 
 h1 {
     font-family: Orbitron;
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    text-shadow: 0 0 25px #ff004c;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    color: white;
+    text-shadow: 0 0 25px #ff2aa0;
 }
 
 .subtitle {
-    opacity: 0.6;
-    margin-bottom: 15px;
+    opacity: 0.7;
+    margin-top: 10px;
 }
 
 .section {
-    max-width: 1200px;
-    margin: 50px auto;
+    max-width: 1100px;
+    margin: 60px auto;
     padding: 0 20px;
-}
-
-.section h2 {
-    margin-bottom: 25px;
+    text-align: center;
 }
 
 .slider {
     display: flex;
-    gap: 25px;
-    overflow-x: auto;
-    padding-bottom: 10px;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
 }
 
 .card {
-    min-width: 260px;
-    height: 300px;
-    background: linear-gradient(145deg, #111122, #0a0a18);
+    width: 260px;
+    height: 200px;
+    background: #0a0a14;
     border-radius: 20px;
     padding: 20px;
     position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 40px rgba(255,0,120,0.4);
+    transition: 0.3s;
+}
+
+.card.center {
+    transform: scale(1.1);
+    box-shadow: 0 0 60px rgba(255,0,120,0.8);
 }
 
 .card:hover {
-    box-shadow: 0 20px 40px rgba(255,0,76,0.3);
+    transform: scale(1.15);
 }
 
 .new {
     position: absolute;
-    top: 12px;
-    left: 12px;
-    background: #ff004c;
+    top: 10px;
+    left: 10px;
+    background: #ff2aa0;
     padding: 5px 10px;
-    font-size: 0.7rem;
     border-radius: 6px;
+    font-size: 0.7rem;
 }
 
-.card h3 {
-    font-size: 1.1rem;
-}
-
-audio {
-    width: 100%;
-    margin: 10px 0;
-    filter: invert(1);
+h3 {
+    margin-top: 20px;
 }
 
 .price {
-    margin: 5px 0;
-    font-weight: 600;
+    margin: 10px 0;
+    opacity: 0.8;
 }
 
 button {
     width: 100%;
     padding: 12px;
     border: none;
-    border-radius: 12px;
-    background: linear-gradient(90deg, #ff004c, #ff66cc);
+    border-radius: 10px;
+    background: linear-gradient(90deg, #ff2aa0, #ff6ec7);
     color: white;
+    font-weight: bold;
     cursor: pointer;
-    transition: 0.3s;
 }
 
-button:hover {
-    transform: scale(1.05);
+.download-btn {
+    background: linear-gradient(90deg, #ff2aa0, #ffffff);
+    color: black;
 }
 
 </style>
@@ -118,67 +116,52 @@ button:hover {
 <div class="slider" id="beats"></div>
 </div>
 
-<div class="section">
-<h2>CINEMATIC 🎬</h2>
-<div class="slider" id="cinematic"></div>
-</div>
-
 <script>
+const paypal = "https://paypal.me/zkaterswrldd/10";
+
+let unlocked = JSON.parse(localStorage.getItem("purchased")) || [];
+
 const beats = [
 {title:"FALL APART", file:"beat1.mp3"},
-{title:"END OF TIME", file:"beat2.mp3"},
-{title:"LAST TIME", file:"beat3.mp3"},
-{title:"LOGISTICS", file:"beat4.mp3"},
-{title:"TWO FACED", file:"beat5.mp3"},
+{title:"END OF THE WORLD", file:"beat2.mp3"},
+{title:"COMING SOON", file:"beat3.mp3"}
 ];
 
-const cinematic = [
-{title:"MENTAL DEFLATION", file:"horror1.mp3"},
-{title:"COMING SOON", file:"horror2.mp3"},
-{title:"COMING SOON", file:"horror3.mp3"}
-];
+function purchase(file) {
+    window.open(paypal, "_blank");
 
-function createCards(list, id) {
-    const container = document.getElementById(id);
+    setTimeout(() => {
+        unlocked.push(file);
+        localStorage.setItem("purchased", JSON.stringify(unlocked));
+        location.reload();
+    }, 2000);
+}
 
-    list.forEach((item, index) => {
+function createCards() {
+    const container = document.getElementById("beats");
+
+    beats.forEach((item, i) => {
         const card = document.createElement("div");
-        card.className = "card";
+        card.className = "card" + (i === 1 ? " center" : "");
+
+        const isUnlocked = unlocked.includes(item.file);
 
         card.innerHTML = `
-        ${id === "beats" && index < 2 ? '<div class="new">NEW</div>' : ''}
+        ${i === 0 ? '<div class="new">NEW</div>' : ''}
         <h3>${item.title}</h3>
-        <audio controls>
-            <source src="${item.file}" type="audio/mpeg">
-        </audio>
         <div class="price">$10</div>
-        <button>PURCHASE ⚡</button>
+        ${isUnlocked 
+            ? `<a href="${item.file}" download><button class="download-btn">DOWNLOAD MP3 ⚡</button></a>`
+            : `<button onclick="purchase('${item.file}')">BUY ⚡</button>`
+        }
         `;
-
-        // 3D hover effect
-        card.addEventListener("mousemove", e => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            const rotateX = -(y - rect.height/2) / 10;
-            const rotateY = (x - rect.width/2) / 10;
-
-            card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-        });
-
-        card.addEventListener("mouseleave", () => {
-            card.style.transform = "rotateX(0) rotateY(0)";
-        });
 
         container.appendChild(card);
     });
 }
 
-createCards(beats, "beats");
-createCards(cinematic, "cinematic");
+createCards();
 </script>
 
 </body>
 </html>
-
