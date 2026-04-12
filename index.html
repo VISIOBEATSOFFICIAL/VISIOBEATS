@@ -10,20 +10,28 @@
 <style>
 body {
     margin: 0;
-    background: radial-gradient(circle at center, #1a0022, #000);
+    background: radial-gradient(circle at top, #1a0022, #000);
     color: white;
     font-family: Poppins, sans-serif;
+    overflow-x: hidden;
+}
+
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
 }
 
 header {
     text-align: center;
-    padding: 60px 20px 20px;
+    padding: 50px 20px 20px;
 }
 
 h1 {
     font-family: Orbitron;
-    font-size: clamp(2.5rem, 6vw, 4rem);
-    text-shadow: 0 0 25px #ff2aa0;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    text-shadow: 0 0 30px #ff2aa0;
 }
 
 .subtitle {
@@ -32,50 +40,37 @@ h1 {
 
 .section {
     max-width: 1100px;
-    margin: 60px auto;
-    padding: 0 20px;
-    text-align: center;
+    margin: 50px auto;
+    padding: 0 15px;
 }
 
 .slider {
     display: flex;
-    justify-content: center;
-    gap: 30px;
-    flex-wrap: wrap;
+    gap: 20px;
+    overflow-x: auto;
 }
 
 .card {
-    width: 260px;
-    background: #0a0a14;
-    border-radius: 20px;
-    padding: 20px;
-    position: relative;
-    box-shadow: 0 0 40px rgba(255,0,120,0.4);
+    min-width: 240px;
+    background: rgba(15,15,30,0.8);
+    border-radius: 15px;
+    padding: 15px;
     transition: 0.3s;
-}
-
-.card.center {
-    transform: scale(1.1);
-    box-shadow: 0 0 60px rgba(255,0,120,0.8);
+    backdrop-filter: blur(10px);
 }
 
 .card:hover {
-    transform: scale(1.15);
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 0 25px #ff2aa0;
 }
 
 .new {
-    position: absolute;
-    top: 10px;
-    left: 10px;
     background: #ff2aa0;
-    padding: 5px 10px;
-    border-radius: 6px;
+    padding: 4px 8px;
     font-size: 0.7rem;
+    border-radius: 5px;
+    display: inline-block;
 }
-
-h3 { margin-top: 15px; }
-
-.price { margin: 10px 0; opacity: 0.8; }
 
 audio {
     width: 100%;
@@ -90,7 +85,7 @@ button {
     border-radius: 10px;
     background: linear-gradient(90deg, #ff2aa0, #ff6ec7);
     color: white;
-    font-weight: bold;
+    font-weight: 600;
     cursor: pointer;
 }
 
@@ -104,6 +99,8 @@ button {
 
 <body>
 
+<canvas id="bg"></canvas>
+
 <header>
 <h1>VISIOBEATS ♬</h1>
 <div class="subtitle">Enter The Void</div>
@@ -114,20 +111,79 @@ button {
 <div class="slider" id="beats"></div>
 </div>
 
+<div class="section">
+<h2>CINEMATIC 🎬</h2>
+<div class="slider" id="cinematic"></div>
+</div>
+
 <script>
+// PARTICLE SPACE BACKGROUND
+const canvas = document.getElementById("bg");
+const ctx = canvas.getContext("2d");
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener("resize", resize);
+
+let stars = [];
+for (let i = 0; i < 120; i++) {
+    stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.5,
+        d: Math.random() * 0.3
+    });
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "white";
+
+    stars.forEach(s => {
+        s.y += s.d;
+        if (s.y > canvas.height) s.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    requestAnimationFrame(animate);
+}
+animate();
+
+// AUDIO CONTROL (ONLY ONE AT A TIME)
+let currentAudio = null;
+document.addEventListener("play", function(e) {
+    if (currentAudio && currentAudio !== e.target) {
+        currentAudio.pause();
+    }
+    currentAudio = e.target;
+}, true);
+
 const paypal = "https://paypal.me/zkaterswrldd/10";
 let unlocked = JSON.parse(localStorage.getItem("purchased")) || [];
 
 const beats = [
 {title:"FALL APART", file:"beat1.mp3"},
-{title:"END OF THE WORLD", file:"beat2.mp3"},
-{title:"COMING SOON", file:"beat3.mp3"}
+{title:"END OF THE TIME", file:"beat2.mp3"},
+{title:"LAST TIME", file:"beat3.mp3"},
+{title:"Logistics", file:"beat4.mp3"},
+{title:"TWO FACED", file:"beat5.mp3"},
+];
+
+const cinematic = [
+{title:"MENTAL DEFLATION", file:"horror1.mp3"},
+{title:"COMING SOON...", file:"horror2.mp3"},
+{title:"COMING SOON...", file:"horror3.mp3"}
 ];
 
 function purchase(file) {
     window.open(paypal, "_blank");
 
-    // simulate unlock after payment
     setTimeout(() => {
         unlocked.push(file);
         localStorage.setItem("purchased", JSON.stringify(unlocked));
@@ -135,31 +191,31 @@ function purchase(file) {
     }, 2000);
 }
 
-function createCards() {
-    const container = document.getElementById("beats");
+function createCards(list, id) {
+    const container = document.getElementById(id);
 
-    beats.forEach((item, i) => {
-        const card = document.createElement("div");
-        card.className = "card" + (i === 1 ? " center" : "");
-
+    list.forEach((item, index) => {
         const isUnlocked = unlocked.includes(item.file);
 
+        const card = document.createElement("div");
+        card.className = "card";
+
         card.innerHTML = `
-        ${i === 0 ? '<div class="new">NEW</div>' : ''}
+        ${id === "beats" && index < 2 ? '<div class="new">NEW</div>' : ''}
         <h3>${item.title}</h3>
 
-        <!-- AUDIO PREVIEW (ALWAYS AVAILABLE) -->
+        <!-- LISTEN PREVIEW ALWAYS AVAILABLE -->
         <audio controls controlsList="nodownload">
             <source src="${item.file}" type="audio/mpeg">
         </audio>
 
-        <div class="price">$10</div>
+        <p>$10</p>
 
-        ${isUnlocked 
+        ${isUnlocked
             ? `<a href="${item.file}" download>
                 <button class="download-btn">DOWNLOAD MP3 ⚡</button>
                </a>`
-            : `<button onclick="purchase('${item.file}')">BUY ⚡</button>`
+            : `<button onclick="purchase('${item.file}')">PURCHASE THIS BEAT ⚡</button>`
         }
         `;
 
@@ -167,7 +223,8 @@ function createCards() {
     });
 }
 
-createCards();
+createCards(beats, "beats");
+createCards(cinematic, "cinematic");
 </script>
 
 </body>
