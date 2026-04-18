@@ -24,16 +24,21 @@
     <h3>Falling Lights</h3>
     <audio controls src="audio/beat1.mp3"></audio>
 
-    <!-- CHANGE LINK TO YOUR PAYMENT -->
-    <a href="https://paypal.me/zkaterswrldd" target="_blank">
-      <button>Buy - $25</button>
-    </a>
+    <button onclick="buyBeat('YOUR_STRIPE_LINK_1')">Buy - $25</button>
   </div>
 
-  <!-- BEAT 2 (SOLD OUT EXAMPLE) -->
+  <!-- BEAT 2 -->
+  <div class="beat">
+    <h3>End of Time</h3>
+    <audio controls src="audio/beat2.mp3"></audio>
+
+    <button onclick="buyBeat('YOUR_STRIPE_LINK_2')">Buy - $25</button>
+  </div>
+
+  <!-- SOLD OUT EXAMPLE -->
   <div class="beat sold">
     <h3>Empty Nights</h3>
-    <audio controls src="audio/beat2.mp3"></audio>
+    <audio controls src="audio/beat3.mp3"></audio>
 
     <button disabled>Sold Out</button>
   </div>
@@ -43,6 +48,12 @@
 <footer>
   <p>© VISIO BEATS</p>
 </footer>
+
+<script>
+function buyBeat(link) {
+  window.location.href = link;
+}
+</script>
 
 </body>
 </html>
