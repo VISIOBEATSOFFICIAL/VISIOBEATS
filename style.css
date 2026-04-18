@@ -1,0 +1,66 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: black;
+  color: white;
+}
+
+header {
+  text-align: center;
+  padding: 30px;
+}
+
+header h1 {
+  color: #8a2be2;
+  font-size: 3em;
+}
+
+.hero {
+  height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(black, #111);
+  font-size: 2em;
+}
+
+.beats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.beat {
+  background: #111;
+  margin: 20px;
+  padding: 20px;
+  border-radius: 15px;
+  width: 250px;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.beat:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px purple;
+}
+
+button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  border: none;
+  background: purple;
+  color: white;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+/* SOLD OUT STYLE */
+.sold {
+  opacity: 0.5;
+}
+
+.sold button {
+  background: gray;
+  cursor: not-allowed;
+}
