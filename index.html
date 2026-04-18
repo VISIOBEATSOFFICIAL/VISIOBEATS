@@ -22,9 +22,12 @@
   <!-- BEAT 1 -->
   <div class="beat">
     <h3>Falling Lights</h3>
+
     <audio controls>
       <source src="audio/beat1.mp3" type="audio/mpeg">
+      Your browser does not support audio.
     </audio>
+
     <button class="buy-btn" data-link="https://buy.stripe.com/aFa8wH8b2cIqcwN0Fr5J600">
       Buy - $10
     </button>
@@ -33,9 +36,12 @@
   <!-- BEAT 2 -->
   <div class="beat">
     <h3>End of Time</h3>
+
     <audio controls>
       <source src="audio/beat2.mp3" type="audio/mpeg">
+      Your browser does not support audio.
     </audio>
+
     <button class="buy-btn" data-link="https://buy.stripe.com/aFa3cn9f637Q9kB4VH5J601">
       Buy - $10
     </button>
@@ -43,10 +49,13 @@
 
   <!-- BEAT 3 -->
   <div class="beat">
-    <h3>God's Land</h3>
+    <h3>God’s Land</h3>
+
     <audio controls>
       <source src="audio/beat3.mp3" type="audio/mpeg">
+      Your browser does not support audio.
     </audio>
+
     <button class="buy-btn" data-link="https://buy.stripe.com/9B6dR1dvm8safIZgEp5J602">
       Buy - $10
     </button>
@@ -55,9 +64,11 @@
   <!-- SOLD OUT -->
   <div class="beat sold">
     <h3>Empty Nights</h3>
+
     <audio controls>
       <source src="audio/beat4.mp3" type="audio/mpeg">
     </audio>
+
     <button disabled>Sold Out</button>
   </div>
 
@@ -68,13 +79,11 @@
 </footer>
 
 <script>
-  // Handle all buy buttons cleanly
-  document.querySelectorAll(".buy-btn").forEach(button => {
-    button.addEventListener("click", () => {
-      const link = button.getAttribute("data-link");
-      window.location.href = link;
-    });
+document.querySelectorAll(".buy-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    window.location.href = btn.dataset.link;
   });
+});
 </script>
 
 </body>
