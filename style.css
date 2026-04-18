@@ -1,61 +1,91 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: black;
   color: white;
+  background: black;
+  overflow-x: hidden;
 }
 
+/* 🌌 SPACE BACKGROUND */
+body::before {
+  content: "";
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: url("images/space.jpg") center/cover no-repeat;
+  z-index: -2;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(0,0,0,0.6), black);
+  z-index: -1;
+}
+
+/* HEADER */
 header {
   text-align: center;
-  padding: 30px;
+  padding: 40px;
 }
 
 header h1 {
-  color: #8a2be2;
   font-size: 3em;
+  color: #a855f7;
+  letter-spacing: 3px;
 }
 
+/* HERO */
 .hero {
   height: 60vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(black, #111);
   font-size: 2em;
+  text-align: center;
 }
 
+/* BEATS */
 .beats {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  padding: 40px;
 }
 
 .beat {
-  background: #111;
+  background: rgba(20,20,20,0.7);
+  backdrop-filter: blur(10px);
   margin: 20px;
   padding: 20px;
   border-radius: 15px;
-  width: 250px;
+  width: 260px;
   text-align: center;
   transition: 0.3s;
 }
 
 .beat:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 15px purple;
+  box-shadow: 0 0 25px #a855f7;
 }
 
 button {
   margin-top: 10px;
   padding: 10px 20px;
   border: none;
-  background: purple;
+  background: #a855f7;
   color: white;
   border-radius: 20px;
   cursor: pointer;
 }
 
-/* SOLD OUT STYLE */
+button:hover {
+  background: #9333ea;
+}
+
+/* SOLD OUT */
 .sold {
   opacity: 0.5;
 }
