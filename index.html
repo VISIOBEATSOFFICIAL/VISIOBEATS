@@ -1,89 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>VISIO BEATS</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VISIO BEATS</title>
+
+<style>
+/* ===== RESET ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  color: white;
+  background: radial-gradient(circle at top, #050510, #000);
+  overflow-x: hidden;
+}
+
+/* ===== SPACE BACKGROUND ===== */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 20% 20%, rgba(160,0,255,0.25), transparent 40%),
+              radial-gradient(circle at 80% 60%, rgba(0,200,255,0.15), transparent 40%);
+  z-index: -2;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("https://www.transparenttextures.com/patterns/stardust.png");
+  opacity: 0.3;
+  z-index: -1;
+  animation: moveStars 100s linear infinite;
+}
+
+@keyframes moveStars {
+  from { transform: translateY(0); }
+  to { transform: translateY(-1000px); }
+}
+
+/* ===== HEADER ===== */
+header {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+header h1 {
+  font-size: 3rem;
+  color: #b46bff;
+  text-shadow: 0 0 20px rgba(180,107,255,0.5);
+}
+
+/* ===== HERO ===== */
+.hero {
+  text-align: center;
+  padding: 30px 20px;
+  font-size: 1.5rem;
+}
+
+/* ===== GRID ===== */
+.beats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  padding: 30px;
+  max-width: 1000px;
+  margin: auto;
+}
+
+/* ===== CARD ===== */
+.beat {
+  background: rgba(20,20,30,0.7);
+  backdrop-filter: blur(10px);
+  padding: 15px;
+  border-radius: 15px;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.beat:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 20px rgba(180,107,255,0.4);
+}
+
+.beat h3 {
+  margin-bottom: 10px;
+}
+
+/* ===== AUDIO FIX (IMPORTANT) ===== */
+audio {
+  width: 100%;
+  margin: 10px 0;
+  border-radius: 10px;
+}
+
+/* ===== BUTTON ===== */
+button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 20px;
+  background: #a855f7;
+  color: white;
+  cursor: pointer;
+  width: 100%;
+}
+
+button:hover {
+  background: #9333ea;
+}
+
+/* ===== SOLD OUT ===== */
+.sold {
+  opacity: 0.4;
+}
+
+.sold button {
+  background: gray;
+  cursor: not-allowed;
+}
+</style>
 </head>
 
 <body>
 
 <header>
   <h1>VISIO BEATS</h1>
-  <p>See the Sound.</p>
 </header>
 
 <section class="hero">
-  <h2>Emotion in Every Frequency</h2>
+  Emotion in Every Frequency
 </section>
 
 <section class="beats">
 
-  <!-- BEAT 1 -->
   <div class="beat">
     <h3>Falling Lights</h3>
-
-    <audio controls>
-      <source src="beat1.mp3" type="audio/mpeg">
-      Your browser does not support audio.
+    <audio controls preload="none">
+      <source src="audio/beat1.mp3" type="audio/mpeg">
     </audio>
-
-    <button class="buy-btn" data-link="https://buy.stripe.com/aFa8wH8b2cIqcwN0Fr5J600">
-      Buy - $10
-    </button>
+    <button onclick="buy('https://buy.stripe.com/aFa8wH8b2cIqcwN0Fr5J600')">Buy - $10</button>
   </div>
 
-  <!-- BEAT 2 -->
   <div class="beat">
     <h3>End of Time</h3>
-
-    <audio controls>
-      <source src="beat2.mp3" type="audio/mpeg">
-      Your browser does not support audio.
+    <audio controls preload="none">
+      <source src="audio/beat2.mp3" type="audio/mpeg">
     </audio>
-
-    <button class="buy-btn" data-link="https://buy.stripe.com/aFa3cn9f637Q9kB4VH5J601">
-      Buy - $10
-    </button>
+    <button onclick="buy('https://buy.stripe.com/aFa3cn9f637Q9kB4VH5J601')">Buy - $10</button>
   </div>
 
-  <!-- BEAT 3 -->
   <div class="beat">
     <h3>God’s Land</h3>
-
-    <audio controls>
-      <source src="beat3.mp3" type="audio/mpeg">
-      Your browser does not support audio.
+    <audio controls preload="none">
+      <source src="audio/beat3.mp3" type="audio/mpeg">
     </audio>
-
-    <button class="buy-btn" data-link="https://buy.stripe.com/9B6dR1dvm8safIZgEp5J602">
-      Buy - $10
-    </button>
+    <button onclick="buy('https://buy.stripe.com/9B6dR1dvm8safIZgEp5J602')">Buy - $10</button>
   </div>
 
-  <!-- SOLD OUT -->
   <div class="beat sold">
     <h3>Empty Nights</h3>
-
-    <audio controls>
+    <audio controls preload="none">
       <source src="audio/beat4.mp3" type="audio/mpeg">
     </audio>
-
     <button disabled>Sold Out</button>
   </div>
 
 </section>
 
-<footer>
-  <p>© VISIO BEATS</p>
-</footer>
-
 <script>
-document.querySelectorAll(".buy-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    window.location.href = btn.dataset.link;
-  });
-});
+function buy(link) {
+  window.location.href = link;
+}
 </script>
 
 </body>
